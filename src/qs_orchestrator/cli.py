@@ -5,8 +5,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .repo import collect_context
 from .llm import complete
+from .repo import collect_context
 
 SYSTEM = """You are a senior Python/MCP engineer reviewing a health-data MCP server.
 Be evidence-driven. Do not invent defects. Identify the single highest-priority
