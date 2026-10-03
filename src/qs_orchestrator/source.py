@@ -16,7 +16,7 @@ import httpx
 
 from .contract import Result, Status, Task
 
-SourceType = Literal["api", "local", "browser"]
+SourceType = Literal["api", "local", "browser", "composite"]
 
 
 @dataclass(frozen=True)
