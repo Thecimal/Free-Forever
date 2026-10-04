@@ -14,7 +14,7 @@ import time
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 
-from .composite import CompositeSource, elapsed_ms
+from .composite import CompositeSource, attempts_from, elapsed_ms
 from .contract import Result, Task
 from .source import Source
 
@@ -33,11 +33,12 @@ class AggregateSource(CompositeSource):
                 f"{source.id}: {result.error or result.status}"
                 for source, result in zip(self.sources, results, strict=True)
             ]
-            return self._all_failed(failures, start)
+            return self._all_failed(failures, start, attempts_from(results))
         return Result(
             content="\n\n".join(f"## {result.source}\n{result.content}" for result in successes),
             source=self.id,
             model=", ".join(dict.fromkeys(result.model for result in successes)),
             status="success",
             latency_ms=elapsed_ms(start),
+            attempts=attempts_from(results),
         )

@@ -3,7 +3,8 @@
 ParallelSource is itself a Source, so callers keep using
 ``source.execute(task)``. Sources must be safe to call concurrently.
 Losing sources are not interrupted: requests already in flight finish in
-the background and their results are discarded.
+the background and their results are discarded; the attempts trail only
+lists members that had finished.
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import replace
 
-from .composite import CompositeSource, elapsed_ms
+from .composite import CompositeSource, attempts_from, elapsed_ms
 from .contract import Result, Task
 from .source import Source
 
@@ -27,14 +28,22 @@ class ParallelSource(CompositeSource):
         pool = ThreadPoolExecutor(max_workers=len(self.sources))
         futures = {pool.submit(source.execute, task): i for i, source in enumerate(self.sources)}
         failures: dict[int, str] = {}
+        finished: dict[int, Result] = {}
         try:
             for future in as_completed(futures):
                 result = future.result()
+                finished[futures[future]] = result
                 if result.status == "success":
-                    return replace(result, latency_ms=elapsed_ms(start))
+                    return replace(
+                        result,
+                        latency_ms=elapsed_ms(start),
+                        attempts=attempts_from(finished[i] for i in sorted(finished)),
+                    )
                 failures[futures[future]] = result.error or result.status
         finally:
             pool.shutdown(wait=False, cancel_futures=True)
         return self._all_failed(
-            [f"{self.sources[i].id}: {failures[i]}" for i in sorted(failures)], start
+            [f"{self.sources[i].id}: {failures[i]}" for i in sorted(failures)],
+            start,
+            attempts_from(finished[i] for i in sorted(finished)),
         )

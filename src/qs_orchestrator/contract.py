@@ -15,6 +15,17 @@ class Task:
 
 
 @dataclass(frozen=True)
+class Attempt:
+    """One step of the trail a composite source followed to produce a Result."""
+
+    source: str
+    model: str
+    status: Status
+    latency_ms: int
+    error: str | None = None
+
+
+@dataclass(frozen=True)
 class Result:
     content: str
     source: str
@@ -22,3 +33,4 @@ class Result:
     status: Status
     latency_ms: int
     error: str | None = None
+    attempts: tuple[Attempt, ...] = ()

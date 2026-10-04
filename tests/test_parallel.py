@@ -33,6 +33,10 @@ class ObservedFailure:
     """
 
     status = "error"
+    source = "b"
+    model = "m"
+    latency_ms = 1
+    attempts = ()
 
     def __init__(self, error, read):
         self._error = error

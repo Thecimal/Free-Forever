@@ -4,14 +4,37 @@ from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 
-from .contract import Result, Task
+from .contract import Attempt, Result, Task
 from .source import Availability, Source, SourceType
 
 
 def elapsed_ms(start: float) -> int:
     return round((time.perf_counter() - start) * 1000)
+
+
+def attempts_from(results: Iterable[Result]) -> tuple[Attempt, ...]:
+    """The trail of what was tried, flattened to the sources that did the work.
+
+    A member that is itself a composite already carries its own trail, which is
+    used as is; a plain source contributes one entry describing its Result.
+    """
+    attempts: list[Attempt] = []
+    for result in results:
+        if result.attempts:
+            attempts.extend(result.attempts)
+        else:
+            attempts.append(
+                Attempt(
+                    source=result.source,
+                    model=result.model,
+                    status=result.status,
+                    latency_ms=result.latency_ms,
+                    error=result.error,
+                )
+            )
+    return tuple(attempts)
 
 
 class CompositeSource(ABC):
@@ -44,7 +67,9 @@ class CompositeSource(ABC):
             details.append(f"{source.id}: {availability.detail or 'unavailable'}")
         return Availability(False, "; ".join(details))
 
-    def _all_failed(self, failures: Sequence[str], start: float) -> Result:
+    def _all_failed(
+        self, failures: Sequence[str], start: float, attempts: tuple[Attempt, ...] = ()
+    ) -> Result:
         return Result(
             content="",
             source=self.id,
@@ -52,4 +77,5 @@ class CompositeSource(ABC):
             status="error",
             latency_ms=elapsed_ms(start),
             error="all sources failed: " + "; ".join(failures),
+            attempts=attempts,
         )

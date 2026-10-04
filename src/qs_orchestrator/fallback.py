@@ -10,7 +10,7 @@ import time
 from collections.abc import Sequence
 from dataclasses import replace
 
-from .composite import CompositeSource, elapsed_ms
+from .composite import CompositeSource, attempts_from, elapsed_ms
 from .contract import Result, Task
 from .source import Source
 
@@ -22,9 +22,13 @@ class FallbackSource(CompositeSource):
     def execute(self, task: Task) -> Result:
         start = time.perf_counter()
         failures: list[str] = []
+        tried: list[Result] = []
         for source in self.sources:
             result = source.execute(task)
+            tried.append(result)
             if result.status == "success":
-                return replace(result, latency_ms=elapsed_ms(start))
+                return replace(
+                    result, latency_ms=elapsed_ms(start), attempts=attempts_from(tried)
+                )
             failures.append(f"{source.id}: {result.error or result.status}")
-        return self._all_failed(failures, start)
+        return self._all_failed(failures, start, attempts_from(tried))
