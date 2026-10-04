@@ -10,23 +10,32 @@ The goal is simple:
 > **One interface. Any source. Multiple models.**
 
 Free-Forever handles **what work should happen**.
-[OmniRoute](https://github.com/diegomura/omniroute) handles **where model requests are routed**.
+[OmniRoute](https://github.com/diegosouzapw/OmniRoute) handles **where model requests are routed**.
 
 ---
 
 ## What exists today
 
-Free-Forever is currently **early-stage / experimental**.
+Free-Forever is currently **early-stage / experimental**, but the core path works.
 
-The project is establishing the core architecture for:
+**Implemented**
 
-* normalized AI sources
-* local orchestration
-* OmniRoute integration
-* browser-based AI access
-* local models
-* free API sources
-* execution results and observability
+* A normalized execution contract: a `Task` goes in and a `Result` comes out, whatever source handled it
+* A `Source` interface with two sources:
+  * `OmniRouteSource` — any OpenAI-compatible endpoint, such as OmniRoute
+  * `LocalModelSource` — a local model served through the Ollama API
+* Composite sources, which are themselves sources and can be nested:
+  * `FallbackSource` — try sources in order until one succeeds
+  * `ParallelSource` — start every source at once; the first success wins
+  * `AggregateSource` — run every source and combine the answers
+* An attempts trail on composite results: which sources were tried, what failed, and which one answered
+* A `qs-orchestrator analyze` command that runs through OmniRoute, with an optional local-model fallback
+
+**Not implemented yet**
+
+* Browser-based AI access
+* Sequential workflows
+* Cross-model synthesis (a model that merges other models' answers)
 
 The implementation is still under active development.
 
@@ -63,15 +72,15 @@ Free-Forever should make different AI sources behave like one available pool of 
 
 ---
 
-## Planned capabilities
+## Capabilities
 
-### Fallback
+### Fallback (implemented)
 
 ```text
-Model A → unavailable → Model B → result
+Model A → fails → Model B → result
 ```
 
-### Parallel execution
+### Parallel execution (implemented)
 
 ```text
           TASK
@@ -83,13 +92,15 @@ Model A → unavailable → Model B → result
        AGGREGATION
 ```
 
-### Sequential workflows
+`ParallelSource` returns the first success; `AggregateSource` waits for every source and combines the answers.
+
+### Sequential workflows (planned)
 
 ```text
 Research → Analysis → Critique → Synthesis
 ```
 
-### Cross-model synthesis
+### Cross-model synthesis (planned)
 
 ```text
 Model A ─┐
@@ -97,7 +108,7 @@ Model B ─┼→ Synthesizer → Result
 Model C ─┘
 ```
 
-These are **target capabilities, not claims about the current implementation**.
+Fallback, parallel execution and aggregation are implemented. Sequential workflows and cross-model synthesis are **target capabilities, not claims about the current implementation**.
 
 ---
 
@@ -134,19 +145,43 @@ Sources should be isolated and replaceable so that removing one provider does no
 
 ---
 
+## Configuration
+
+`qs-orchestrator analyze` reads its settings from the environment or a `.env` file (see `.env.example`):
+
+| Variable | Meaning |
+| --- | --- |
+| `LLM_BASE_URL` | Base URL of the OpenAI-compatible endpoint, for example a local OmniRoute such as `http://localhost:20128/v1` |
+| `LLM_API_KEY` | API key for that endpoint |
+| `LLM_MODEL` | Model to request |
+| `LOCAL_MODEL` | Optional. A local model name; when set, it is used as a fallback if the endpoint fails |
+| `LOCAL_BASE_URL` | Optional. Local model server (Ollama API); defaults to `http://localhost:11434` |
+| `REPO_PATH` | Repository to analyze; defaults to the current directory |
+| `GITHUB_REPOSITORY` | Repository name used in the prompt |
+| `MAX_CONTEXT_CHARS` | Maximum repository context sent to the model; defaults to `50000` |
+
+```text
+qs-orchestrator analyze            # run the analysis and save a report under reports/
+qs-orchestrator analyze --dry-run  # print the prompt without calling a model
+```
+
+The report is written to `reports/analysis-<timestamp>.md`. A summary on stderr says which source answered and lists any earlier failed attempts. If every source fails, the command exits with the error and writes no report.
+
+---
+
 ## Roadmap
 
 ```text
-1. Single source execution
-2. Normalized source interface
-3. OmniRoute integration
-4. Fallback routing
-5. Parallel execution
-6. Result aggregation
-7. Sequential workflows
-8. Browser sources
-9. Observability
-10. Unified interface
+1. [x] Single source execution
+2. [x] Normalized source interface
+3. [x] OmniRoute integration
+4. [x] Fallback routing
+5. [x] Parallel execution
+6. [x] Result aggregation
+7. [ ] Sequential workflows
+8. [ ] Browser sources
+9. [x] Observability (attempts trail; no logging or metrics yet)
+10. [ ] Unified interface (`analyze` runs through the Source layer; no general-purpose interface yet)
 ```
 
 ---
