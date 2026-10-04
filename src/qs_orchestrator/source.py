@@ -41,6 +41,15 @@ def render_task(task: Task) -> str:
     return "\n\n".join([*task.context, task.prompt])
 
 
+def build_messages(task: Task) -> list[dict[str, str]]:
+    """The chat messages for a Task: an optional system message, then the user message."""
+    messages: list[dict[str, str]] = []
+    if task.system:
+        messages.append({"role": "system", "content": task.system})
+    messages.append({"role": "user", "content": render_task(task)})
+    return messages
+
+
 class HttpSource(ABC):
     """Shared plumbing for sources that talk to an HTTP endpoint.
 

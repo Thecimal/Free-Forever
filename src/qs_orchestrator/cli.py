@@ -1,11 +1,13 @@
 import argparse
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .llm import complete
+from .contract import Task
+from .factory import build_source_from_env
 from .repo import collect_context
 
 SYSTEM = """You are a senior Python/MCP engineer reviewing a health-data MCP server.
@@ -44,12 +46,25 @@ pain point. Cite exact files/symbols from the supplied context.
         if args.dry_run:
             print("SYSTEM:\n", SYSTEM, "\nUSER:\n", prompt)
             return
-        result = complete(SYSTEM, prompt)
+        try:
+            source = build_source_from_env()
+        except KeyError as exc:
+            raise SystemExit(f"Missing environment variable: {exc.args[0]}") from exc
+        result = source.execute(Task(prompt=prompt, system=SYSTEM))
+        if result.status != "success":
+            raise SystemExit(f"Analysis failed: {result.error}")
+        for attempt in result.attempts:
+            if attempt.status != "success":
+                print(f"Failed: {attempt.source}: {attempt.error}", file=sys.stderr)
+        print(
+            f"Answered by: {result.source} ({result.model}) in {result.latency_ms} ms",
+            file=sys.stderr,
+        )
         reports = Path("reports")
         reports.mkdir(exist_ok=True)
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         output = reports / f"analysis-{stamp}.md"
-        output.write_text(result.rstrip() + "\n", encoding="utf-8")
+        output.write_text(result.content.rstrip() + "\n", encoding="utf-8")
         print(f"Saved report: {output}")
 
 

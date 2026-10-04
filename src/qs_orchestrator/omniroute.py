@@ -7,7 +7,7 @@ import os
 import httpx
 
 from .contract import Task
-from .source import HttpSource, render_task
+from .source import HttpSource, build_messages
 
 
 class OmniRouteSource(HttpSource):
@@ -46,7 +46,7 @@ class OmniRouteSource(HttpSource):
     def _complete(self, task: Task) -> tuple[object, object]:
         payload = {
             "model": self.model,
-            "messages": [{"role": "user", "content": render_task(task)}],
+            "messages": build_messages(task),
             "temperature": self.temperature,
         }
         response = self._send(

@@ -7,7 +7,7 @@ import os
 import httpx
 
 from .contract import Task
-from .source import HttpSource, render_task
+from .source import HttpSource, build_messages
 
 DEFAULT_BASE_URL = "http://localhost:11434"
 
@@ -42,7 +42,7 @@ class LocalModelSource(HttpSource):
     def _complete(self, task: Task) -> tuple[object, object]:
         payload = {
             "model": self.model,
-            "messages": [{"role": "user", "content": render_task(task)}],
+            "messages": build_messages(task),
             "stream": False,
             "options": {"temperature": self.temperature},
         }

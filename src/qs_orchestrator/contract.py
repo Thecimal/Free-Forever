@@ -12,6 +12,7 @@ Status = Literal["success", "error"]
 class Task:
     prompt: str
     context: list[str] = field(default_factory=list)
+    system: str | None = None
 
 
 @dataclass(frozen=True)
