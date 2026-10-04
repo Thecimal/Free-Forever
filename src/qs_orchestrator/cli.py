@@ -6,6 +6,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .check import DEFAULT_PROMPT, check_source
 from .contract import Task
 from .factory import build_source_from_env
 from .repo import collect_context
@@ -23,6 +24,13 @@ actionable pain point. Distinguish verified facts from hypotheses. Return:
 Do not propose unrelated cleanup. If repository context is insufficient, say so."""
 
 
+def _build_source():
+    try:
+        return build_source_from_env()
+    except KeyError as exc:
+        raise SystemExit(f"Missing environment variable: {exc.args[0]}") from exc
+
+
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser(prog="qs-orchestrator")
@@ -30,6 +38,8 @@ def main():
     analyze = sub.add_parser("analyze", help="Analyze the local repository")
     analyze.add_argument("--dry-run", action="store_true",
                          help="Print prompt without calling a model")
+    check = sub.add_parser("check", help="Send one small task through the configured source")
+    check.add_argument("--prompt", default=DEFAULT_PROMPT, help="Prompt to send")
     args = parser.parse_args()
 
     if args.command == "analyze":
@@ -46,10 +56,7 @@ pain point. Cite exact files/symbols from the supplied context.
         if args.dry_run:
             print("SYSTEM:\n", SYSTEM, "\nUSER:\n", prompt)
             return
-        try:
-            source = build_source_from_env()
-        except KeyError as exc:
-            raise SystemExit(f"Missing environment variable: {exc.args[0]}") from exc
+        source = _build_source()
         result = source.execute(Task(prompt=prompt, system=SYSTEM))
         if result.status != "success":
             raise SystemExit(f"Analysis failed: {result.error}")
@@ -66,6 +73,11 @@ pain point. Cite exact files/symbols from the supplied context.
         output = reports / f"analysis-{stamp}.md"
         output.write_text(result.content.rstrip() + "\n", encoding="utf-8")
         print(f"Saved report: {output}")
+
+    if args.command == "check":
+        code = check_source(_build_source(), args.prompt)
+        if code:
+            raise SystemExit(code)
 
 
 if __name__ == "__main__":

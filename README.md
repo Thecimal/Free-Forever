@@ -163,6 +163,7 @@ Sources should be isolated and replaceable so that removing one provider does no
 ```text
 qs-orchestrator analyze            # run the analysis and save a report under reports/
 qs-orchestrator analyze --dry-run  # print the prompt without calling a model
+qs-orchestrator check              # send one small task and report availability, result and attempts
 ```
 
 The report is written to `reports/analysis-<timestamp>.md`. A summary on stderr says which source answered and lists any earlier failed attempts. If every source fails, the command exits with the error and writes no report.
