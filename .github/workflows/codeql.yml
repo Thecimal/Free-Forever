@@ -33,3 +33,13 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          upload: false
+          output: ../results
+
+      - name: Upload CodeQL SARIF Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-results-${{ matrix.language }}
+          path: ../results
+          retention-days: 7
