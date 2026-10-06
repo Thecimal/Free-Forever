@@ -28,13 +28,13 @@ Free-Forever is currently **early-stage / experimental**, but the core path work
   * `FallbackSource` — try sources in order until one succeeds
   * `ParallelSource` — start every source at once; the first success wins
   * `AggregateSource` — run every source and combine the answers
+  * `SequentialSource` — run steps in order, each building its prompt from the previous answer
 * An attempts trail on composite results: which sources were tried, what failed, and which one answered
 * A `qs-orchestrator analyze` command that runs through OmniRoute, with optional extra models, an optional local model, and a choice of how they are combined
 
 **Not implemented yet**
 
 * Browser-based AI access built into Free-Forever (OmniRoute's web providers can be used as models, but this is untested here)
-* Sequential workflows
 * Cross-model synthesis (a model that merges other models' answers)
 
 The implementation is still under active development.
@@ -94,7 +94,7 @@ Model A → fails → Model B → result
 
 `ParallelSource` returns the first success; `AggregateSource` waits for every source and combines the answers.
 
-### Sequential workflows (planned)
+### Sequential workflows (implemented)
 
 ```text
 Research → Analysis → Critique → Synthesis
@@ -108,7 +108,7 @@ Model B ─┼→ Synthesizer → Result
 Model C ─┘
 ```
 
-Fallback, parallel execution and aggregation are implemented. Sequential workflows and cross-model synthesis are **target capabilities, not claims about the current implementation**.
+Fallback, parallel execution, aggregation and sequential workflows are implemented. Cross-model synthesis is a **target capability, not a claim about the current implementation**.
 
 ---
 
@@ -183,7 +183,7 @@ The report is written to `reports/analysis-<timestamp>.md`. A summary on stderr 
 4. [x] Fallback routing
 5. [x] Parallel execution
 6. [x] Result aggregation
-7. [ ] Sequential workflows
+7. [x] Sequential workflows
 8. [ ] Browser sources
 9. [x] Observability (attempts trail; no logging or metrics yet)
 10. [ ] Unified interface (`analyze` runs through the Source layer; no general-purpose interface yet)
