@@ -1,6 +1,11 @@
 # FREE-Forever
 <img width="1408" height="768" alt="free" src="https://github.com/user-attachments/assets/58362fed-ee1b-4693-a31f-5f8861355c4a" />
 
+[![CI](https://github.com/Thecimal/Free-Forever/actions/workflows/ci.yml/badge.svg)](https://github.com/Thecimal/Free-Forever/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 **Turn free AI access into one local compute pool.**
 
 Free-Forever is an experimental local orchestration layer for combining **browser-based AI access, free APIs, and local models** through one interface.
@@ -29,13 +34,13 @@ Free-Forever is currently **early-stage / experimental**, but the core path work
   * `ParallelSource` — start every source at once; the first success wins
   * `AggregateSource` — run every source and combine the answers
   * `SequentialSource` — run steps in order, each building its prompt from the previous answer
+  * `synthesize()` — ask several sources, then have a synthesizer source merge their answers
 * An attempts trail on composite results: which sources were tried, what failed, and which one answered
 * A `qs-orchestrator analyze` command that runs through OmniRoute, with optional extra models, an optional local model, and a choice of how they are combined
 
 **Not implemented yet**
 
 * Browser-based AI access built into Free-Forever (OmniRoute's web providers can be used as models, but this is untested here)
-* Cross-model synthesis (a model that merges other models' answers)
 
 The implementation is still under active development.
 
@@ -100,7 +105,7 @@ Model A → fails → Model B → result
 Research → Analysis → Critique → Synthesis
 ```
 
-### Cross-model synthesis (planned)
+### Cross-model synthesis (implemented)
 
 ```text
 Model A ─┐
@@ -108,7 +113,7 @@ Model B ─┼→ Synthesizer → Result
 Model C ─┘
 ```
 
-Fallback, parallel execution, aggregation and sequential workflows are implemented. Cross-model synthesis is a **target capability, not a claim about the current implementation**.
+All four capabilities are implemented as library building blocks. The CLI exposes fallback, parallel execution and aggregation through `LLM_STRATEGY`; sequential workflows and cross-model synthesis are not configurable from the CLI yet.
 
 ---
 
@@ -142,6 +147,28 @@ Sources should be isolated and replaceable so that removing one provider does no
 **Observable** — Show which source/model was used, what failed, and how the result was produced.
 
 **Replaceable** — Providers can disappear without breaking the core architecture.
+
+---
+
+## Quickstart
+
+### Installation
+
+Clone the repository and install the package with dependencies:
+
+```bash
+git clone https://github.com/Thecimal/Free-Forever.git
+cd Free-Forever
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+For development (includes test and linting tools):
+
+```bash
+pip install -e ".[dev]"
+```
 
 ---
 
@@ -196,4 +223,15 @@ The report is written to `reports/analysis-<timestamp>.md`. A summary on stderr 
 > **What if all the free AI access you already have could behave like one local AI system?**
 
 That's what Free-Forever is building.
+
+---
+
+## Community & Contributing
+
+* **[Contributing Guide](CONTRIBUTING.md):** Learn how to set up development, run tests, and propose changes.
+* **[Security Policy](SECURITY.md):** Guidelines for reporting vulnerabilities responsibly.
+* **[Code of Conduct](CODE_OF_CONDUCT.md):** Standards of conduct for contributors and maintainers.
+* **[Support Guide](SUPPORT.md):** Where to get help, ask questions, or open feature requests.
+* **[License](LICENSE):** Licensed under the permissive [MIT License](LICENSE).
+
 

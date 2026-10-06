@@ -1,6 +1,44 @@
+# Environment files
 .env
+.env.*
+!.env.example
+
+# Virtual environments
 .venv/
+env/
+venv/
+ENV/
+
+# Python byte-code and cache
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing and linting caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Generated reports
 reports/*
 !reports/.gitkeep
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+
+# Operating System files
+.DS_Store
+Thumbs.db

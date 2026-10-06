@@ -1,0 +1,47 @@
+name: Feature Request
+description: Suggest an idea, new source adapter, or improvement for Free-Forever
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an improvement or new feature for Free-Forever!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement / Use Case
+      description: Is your feature request related to a specific problem or missing capability?
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: A clear and concise description of what you want to happen or how the API/CLI should look.
+      placeholder: "Add support for..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: A description of any alternative solutions, workarounds, or features you've considered.
+  - type: dropdown
+    id: category
+    attributes:
+      label: Area / Component
+      options:
+        - Source Adapters (OmniRoute, Ollama, new providers)
+        - Composite Strategies (Fallback, Parallel, Aggregate, Synthesis, Sequential)
+        - CLI / Commands (`analyze`, `check`, etc.)
+        - Documentation / Configuration
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: willingness
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to submit a pull request for this feature if accepted.
