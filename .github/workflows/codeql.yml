@@ -34,7 +34,8 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          upload: false
+          upload: "never"
+          upload-database: false
           output: ../results
 
       - name: Upload CodeQL SARIF Report
