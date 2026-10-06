@@ -29,11 +29,11 @@ Free-Forever is currently **early-stage / experimental**, but the core path work
   * `ParallelSource` — start every source at once; the first success wins
   * `AggregateSource` — run every source and combine the answers
 * An attempts trail on composite results: which sources were tried, what failed, and which one answered
-* A `qs-orchestrator analyze` command that runs through OmniRoute, with an optional local-model fallback
+* A `qs-orchestrator analyze` command that runs through OmniRoute, with optional extra models, an optional local model, and a choice of how they are combined
 
 **Not implemented yet**
 
-* Browser-based AI access
+* Browser-based AI access built into Free-Forever (OmniRoute's web providers can be used as models, but this is untested here)
 * Sequential workflows
 * Cross-model synthesis (a model that merges other models' answers)
 
@@ -153,12 +153,16 @@ Sources should be isolated and replaceable so that removing one provider does no
 | --- | --- |
 | `LLM_BASE_URL` | Base URL of the OpenAI-compatible endpoint, for example a local OmniRoute such as `http://localhost:20128/v1` |
 | `LLM_API_KEY` | API key for that endpoint |
-| `LLM_MODEL` | Model to request |
-| `LOCAL_MODEL` | Optional. A local model name; when set, it is used as a fallback if the endpoint fails |
+| `LLM_MODEL` | Model to request (required unless `LLM_MODELS` is set) |
+| `LLM_MODELS` | Optional. Comma-separated models; each becomes its own source. Overrides `LLM_MODEL` |
+| `LLM_STRATEGY` | Optional. How several sources are combined: `fallback` (default), `parallel` or `aggregate` |
+| `LOCAL_MODEL` | Optional. A local model name; when set, it is added as one more source (the last resort under the default `fallback` strategy) |
 | `LOCAL_BASE_URL` | Optional. Local model server (Ollama API); defaults to `http://localhost:11434` |
 | `REPO_PATH` | Repository to analyze; defaults to the current directory |
 | `GITHUB_REPOSITORY` | Repository name used in the prompt |
 | `MAX_CONTEXT_CHARS` | Maximum repository context sent to the model; defaults to `50000` |
+
+OmniRoute can also expose browser sessions (such as ChatGPT Web or Claude Web) as models. To use them, connect the provider in OmniRoute and list its model names in `LLM_MODELS`; `qs-orchestrator check` shows which source answered. This path has not been tested against a live OmniRoute yet.
 
 ```text
 qs-orchestrator analyze            # run the analysis and save a report under reports/

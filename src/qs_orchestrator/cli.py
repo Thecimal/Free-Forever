@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from .check import DEFAULT_PROMPT, check_source
 from .contract import Task
-from .factory import build_source_from_env
+from .factory import ConfigError, build_source_from_env
 from .repo import collect_context
 
 SYSTEM = """You are a senior Python/MCP engineer reviewing a health-data MCP server.
@@ -29,6 +29,8 @@ def _build_source():
         return build_source_from_env()
     except KeyError as exc:
         raise SystemExit(f"Missing environment variable: {exc.args[0]}") from exc
+    except ConfigError as exc:
+        raise SystemExit(f"Invalid configuration: {exc}") from exc
 
 
 def main():

@@ -33,11 +33,14 @@ class OmniRouteSource(HttpSource):
         self.temperature = temperature
 
     @classmethod
-    def from_env(cls) -> OmniRouteSource:
+    def from_env(
+        cls, model: str | None = None, *, source_id: str = "omniroute"
+    ) -> OmniRouteSource:
         return cls(
             base_url=os.environ["LLM_BASE_URL"],
             api_key=os.environ["LLM_API_KEY"],
-            model=os.environ["LLM_MODEL"],
+            model=model if model is not None else os.environ["LLM_MODEL"],
+            source_id=source_id,
         )
 
     def _headers(self) -> dict[str, str]:

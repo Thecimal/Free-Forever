@@ -6,7 +6,15 @@ from qs_orchestrator.local import LocalModelSource
 from qs_orchestrator.omniroute import OmniRouteSource
 from qs_orchestrator.source import Source
 
-NAMES = ["LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL", "LOCAL_BASE_URL", "LOCAL_MODEL"]
+NAMES = [
+    "LLM_BASE_URL",
+    "LLM_API_KEY",
+    "LLM_MODEL",
+    "LLM_MODELS",
+    "LLM_STRATEGY",
+    "LOCAL_BASE_URL",
+    "LOCAL_MODEL",
+]
 
 
 def _env(monkeypatch, **values):
