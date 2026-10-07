@@ -36,7 +36,7 @@ Free-Forever is currently **early-stage / experimental**, but the core path work
   * `SequentialSource` — run steps in order, each building its prompt from the previous answer
   * `synthesize()` — ask several sources, then have a synthesizer source merge their answers
 * An attempts trail on composite results: which sources were tried, what failed, and which one answered
-* A `qs-orchestrator analyze` command that runs through OmniRoute, with optional extra models, an optional local model, and a choice of how they are combined
+* Commands that run through the configured source (OmniRoute, with optional extra models, an optional local model, and a choice of how they are combined): `analyze`, `check`, and `ask` for any prompt
 
 **Not implemented yet**
 
@@ -195,6 +195,7 @@ OmniRoute can also expose browser sessions (such as ChatGPT Web or Claude Web) a
 qs-orchestrator analyze            # run the analysis and save a report under reports/
 qs-orchestrator analyze --dry-run  # print the prompt without calling a model
 qs-orchestrator check              # send one small task and report availability, result and attempts
+qs-orchestrator ask "your prompt"  # send any prompt through the configured source (or pipe it on stdin)
 ```
 
 The report is written to `reports/analysis-<timestamp>.md`. A summary on stderr says which source answered and lists any earlier failed attempts. If every source fails, the command exits with the error and writes no report.
@@ -213,7 +214,7 @@ The report is written to `reports/analysis-<timestamp>.md`. A summary on stderr 
 7. [x] Sequential workflows
 8. [ ] Browser sources
 9. [x] Observability (attempts trail; no logging or metrics yet)
-10. [ ] Unified interface (`analyze` runs through the Source layer; no general-purpose interface yet)
+10. [x] Unified interface (`ask` runs any prompt through the configured source; workflows and synthesis are library-only)
 ```
 
 ---

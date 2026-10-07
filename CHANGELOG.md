@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **CLI Utilities**:
+  * `qs-orchestrator ask`: Send any prompt through the configured source, given as an argument or on stdin, with `--system` for an optional system prompt.
+
+### Changed
+
+- `analyze` and `ask` share one stderr summary of which source answered and which earlier attempts failed.
+
 ## [0.1.0] - 2026-10-07
 
 ### Added
