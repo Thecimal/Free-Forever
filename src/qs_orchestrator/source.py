@@ -82,7 +82,14 @@ class HttpSource(ABC):
             content, model = self._complete(task)
             if not isinstance(content, str):
                 raise TypeError("response message content is not a string")
-        except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError) as exc:
+        except (
+            httpx.HTTPError,
+            httpx.InvalidURL,
+            ValueError,
+            KeyError,
+            IndexError,
+            TypeError,
+        ) as exc:
             return self._result("", self.model, "error", start, f"{type(exc).__name__}: {exc}")
         if not isinstance(model, str) or not model:
             model = self.model
@@ -91,7 +98,7 @@ class HttpSource(ABC):
     def availability(self) -> Availability:
         try:
             self._probe()
-        except httpx.HTTPError as exc:
+        except (httpx.HTTPError, httpx.InvalidURL) as exc:
             return Availability(False, f"{type(exc).__name__}: {exc}")
         return Availability(True)
 

@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `analyze` and `ask` share one stderr summary of which source answered and which earlier attempts failed.
 
+### Fixed
+
+- An invalid base URL, such as the `PORT` placeholder in `.env.example`, now gives a clean error result instead of a traceback.
+
 ## [0.1.0] - 2026-10-07
 
 ### Added
