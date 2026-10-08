@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `analyze` and `ask` share one stderr summary of which source answered and which earlier attempts failed.
+- `analyze` no longer assumes a particular repository: its default prompt is generic, and `.env.example` uses neutral placeholders and OmniRoute's default address.
+- The README now says what `analyze` sends to the model and warns about browser-backed providers.
 
 ### Fixed
 

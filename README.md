@@ -191,6 +191,10 @@ pip install -e ".[dev]"
 
 OmniRoute can also expose browser sessions (such as ChatGPT Web or Claude Web) as models. To use them, connect the provider in OmniRoute and list its model names in `LLM_MODELS`; `qs-orchestrator check` shows which source answered. This path has not been tested against a live OmniRoute yet.
 
+**Browser-backed models.** OmniRoute's web-session providers work by reusing a logged-in browser session instead of an API key. Sessions expire and must be refreshed, providers can change or block this at any time, and using a service this way may be against its terms. Free-Forever does not control any of that, so check OmniRoute's documentation and each provider's terms before relying on it.
+
+**What `analyze` sends.** `analyze` sends the git status, recent commit messages, the list of tracked files, and the contents of tracked source and config files (`.py`, `.toml`, `.md`, `.yml`, `.yaml`, `.ini`, `.cfg`, `.sql`) under `REPO_PATH`, up to `MAX_CONTEXT_CHARS`, to whichever model answers, which may be a third-party service. Do not point it at a repository that contains secrets or code you are not allowed to share.
+
 ```text
 qs-orchestrator analyze            # run the analysis and save a report under reports/
 qs-orchestrator analyze --dry-run  # print the prompt without calling a model

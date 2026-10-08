@@ -11,7 +11,7 @@ from .contract import Task
 from .factory import ConfigError, build_source_from_env
 from .repo import collect_context
 
-SYSTEM = """You are a senior Python/MCP engineer reviewing a health-data MCP server.
+SYSTEM = """You are a senior software engineer reviewing a repository.
 Be evidence-driven. Do not invent defects. Identify the single highest-priority
 actionable pain point. Distinguish verified facts from hypotheses. Return:
 # Highest-priority pain point
