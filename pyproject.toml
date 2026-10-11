@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qs-ai-orchestrator"
-version = "0.1.0"
+version = "0.2.0"
 description = "Local orchestration layer combining browser-based AI, free APIs, and local models into one compute pool"
 readme = "README.md"
 requires-python = ">=3.10"
