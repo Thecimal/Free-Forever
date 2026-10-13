@@ -90,7 +90,7 @@ class HttpSource(ABC):
             IndexError,
             TypeError,
         ) as exc:
-            return self._result("", self.model, "error", start, f"{type(exc).__name__}: {exc}")
+            return self._result("", self.model, "error", start, self._describe(exc))
         if not isinstance(model, str) or not model:
             model = self.model
         return self._result(content, model, "success", start)
@@ -99,8 +99,24 @@ class HttpSource(ABC):
         try:
             self._probe()
         except (httpx.HTTPError, httpx.InvalidURL) as exc:
-            return Availability(False, f"{type(exc).__name__}: {exc}")
+            return Availability(False, self._describe(exc))
         return Availability(True)
+
+    def _secrets(self) -> tuple[str, ...]:
+        """Values that must never appear in an error message."""
+        return ()
+
+    def _describe(self, exc: Exception) -> str:
+        if not isinstance(exc, httpx.HTTPStatusError):
+            return f"{type(exc).__name__}: {exc}"
+        summary = (str(exc).splitlines() or [""])[0]
+        body = " ".join(exc.response.text.split())
+        for secret in self._secrets():
+            if len(secret) >= 8:  # shorter values are placeholders; replacing them mangles text
+                summary = summary.replace(secret, "***")
+                body = body.replace(secret, "***")
+        text = f"{type(exc).__name__}: {summary}"
+        return f"{text} | response: {body[:300]}" if body else text
 
     @abstractmethod
     def _complete(self, task: Task) -> tuple[Any, Any]:

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Failed requests now include the server's response (shortened, with the API key redacted) in the error, so a 503 or 401 says why.
+
 ## [0.2.0] - 2026-10-08
 
 ### Added

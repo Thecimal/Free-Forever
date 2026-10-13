@@ -46,6 +46,9 @@ class OmniRouteSource(HttpSource):
     def _headers(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self.api_key}"}
 
+    def _secrets(self) -> tuple[str, ...]:
+        return (self.api_key,)
+
     def _complete(self, task: Task) -> tuple[object, object]:
         payload = {
             "model": self.model,
