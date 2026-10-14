@@ -39,7 +39,7 @@ jobs:
           output: sarif-results
 
       - name: Upload CodeQL SARIF Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: codeql-results-${{ matrix.language }}
           path: sarif-results
